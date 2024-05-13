@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql
+  labels:
+    app: mysql
+spec:
+  ports:
+  - port: 3306
+    targetPort: 3306
+    name: mysql
+  selector:
+    app: mysql
+  type: ClusterIP #Se usa este tipo de servicio porque MYSQL debe ser accedido de forma interna al cluster y propociona una IP interna estable para accder de forma segura
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+      - name: mysql
+        image: yeivi29/mysql:v4
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: abc123
+        ports:
+        - containerPort: 3306

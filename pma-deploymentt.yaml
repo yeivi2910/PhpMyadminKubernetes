@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+
+  labels:
+    app: pma
+  name: pma
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pma
+  # strategy:
+  #   type: Recreate
+  template:
+    metadata:
+   
+      labels:
+        app: pma
+    spec:
+      containers:
+      - image: yeivi29/phpmyadmin:v4
+        name: phpmyadmin
+        ports:
+        - containerPort: 80
+        env:
+        - name: PMA_HOST
+          value: mysql
+        - name: PMA_PORT
+          value: "3306"
+        - name: MYSQL_ROOT_PASSWORD
+          value: abc123
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pma-service
+spec:
+  type: LoadBalancer #Se usa este tipo de servicio para permitir el acceso facil y seguro a la interfaz web desde fuera del cluster
+  selector:
+    app: pma
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
